@@ -80,7 +80,7 @@ public class SampleCommand implements CommandExecutor {
                     chunk.getBlock(x, y, z).setType(Material.AIR);
 
         OreChunk oreChunk = new OreChunk(settings, chunk);
-        oreChunk.visualiseAir(player.getWorld());
+        oreChunk.visualiseAir(player.getChunk());
 
         return true;
     }
