@@ -74,12 +74,7 @@ public class SampleCommand implements CommandExecutor {
 
         Chunk chunk = player.getChunk();
 
-        for (int x = 0; x < 16; x++)
-            for (int y = 0; y < 256; y++)
-                for (int z = 0; z < 16; z++)
-                    chunk.getBlock(x, y, z).setType(Material.AIR);
-
-        OreChunk oreChunk = new OreChunk(settings, chunk);
+        OreChunk oreChunk = new OreChunk(settings, chunk, player);
         oreChunk.visualiseAir(player.getChunk());
 
         return true;
