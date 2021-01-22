@@ -3,7 +3,9 @@ package uk.co.froogo.civores.generation;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import uk.co.froogo.civores.noise.FastNoise;
 
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ public class OreChunk {
      * @param playerUUID the UUID of the player for which to generate these ores.
      */
     public void generate(@NotNull ArrayList<@NotNull OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, @NotNull UUID worldUUID, @NotNull UUID playerUUID) {
+        System.out.println("Generate");
+
         for (OreGenerationSettings settings : oreGenerationSettings) {
             FastNoise noise = new FastNoise();
             noise.SetSeed(generateSeed(playerUUID, worldUUID, settings.getMaterial()));
@@ -133,5 +137,46 @@ public class OreChunk {
                 coords >> 8,
                 (coords >> 4) & 0xF
         );
+    }
+
+    /**
+     * Tick event, called once per in-game tick.
+     *
+     * @param player the player which the OreChunk belongs to.
+     * @param key the key for the OreChunk stored in the PlayerOreMetadata HashMap.
+     */
+    public void tick(Player player, Long key) {
+        if (state.equals(OreChunkState.GENERATED))
+            sendOres(player, key);
+    }
+
+    /**
+     * Send the ores to a player using packets.
+     *
+     * @param player the player which the OreChunk belongs to.
+     * @param key the key for the OreChunk stored in the PlayerOreMetadata HashMap.
+     */
+    private void sendOres(Player player, Long key) {
+        Chunk chunk = player.getWorld().getChunkAt(key);
+
+        for (Map.Entry<Short, Material> entry : ores.entrySet()) {
+            Block block = shortToBlock(entry.getKey(), chunk);
+
+            if (block.getType().equals(Material.STONE))
+                player.sendBlockChange(block.getLocation(), entry.getValue().createBlockData());
+        }
+
+        state = OreChunkState.SENT;
+    }
+
+    public @Nullable Material getMaterialAtBlock(Block block) {
+        return ores.get(coordsToShort(block.getX() - (block.getChunk().getX() << 4), block.getY(), block.getZ() - (block.getChunk().getZ() << 4)));
+    }
+
+    /**
+     * @return the current state of generation.
+     */
+    public @NotNull OreChunkState getState() {
+        return state;
     }
 }

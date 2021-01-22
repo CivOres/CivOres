@@ -7,7 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import uk.co.froogo.civores.generation.OreChunk;
+import uk.co.froogo.civores.generation.OreChunkState;
 import uk.co.froogo.civores.generation.OreGenerationSettings;
 import uk.co.froogo.civores.noise.FastNoise;
 
@@ -78,8 +80,28 @@ public class SampleCommand implements CommandExecutor {
         Chunk chunk = player.getChunk();
 
         OreChunk oreChunk = new OreChunk();
-        oreChunk.generate(settings, chunk.getX() << 4, chunk.getZ() << 4, player.getUniqueId(), chunk.getWorld().getUID());
-        oreChunk.visualiseAir(player.getChunk());
+
+        // Generate the OreChunk asynchronously.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                oreChunk.generate(settings, chunk.getX() << 4, chunk.getZ() << 4, player.getUniqueId(), chunk.getWorld().getUID());
+            }
+        }.runTaskAsynchronously(CivOres.getInstance());
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Wait until the OreChunk is generated.
+                if (oreChunk.getState().equals(OreChunkState.GENERATING))
+                    return;
+
+                // Cancel this runnable.
+                cancel();
+
+                oreChunk.visualiseAir(chunk);
+            }
+        }.runTaskTimer(CivOres.getInstance(), 1L, 1L);
 
         return true;
     }
