@@ -11,11 +11,22 @@ import java.util.HashMap;
  * Metadata on every player containing all of their cached OreChunks.
  */
 public class PlayerOreMetadata extends MetadataValueAdapter {
+    /**
+     * Metadata key.
+     */
     public static final String key = "civores-player-ore";
 
+    /**
+     * Map of cached OreChunks for a player.
+     *
+     * The key is a Spigot chunk key, the value is an OreChunk.
+     */
     private final @NotNull HashMap<Long, OreChunk> oreChunkMap;
 
-    protected PlayerOreMetadata() {
+    /**
+     * Construct new empty PlayerOreMetadata for players on connection.
+     */
+    public PlayerOreMetadata() {
         super(CivOres.getInstance());
         oreChunkMap = new HashMap<>();
     }
