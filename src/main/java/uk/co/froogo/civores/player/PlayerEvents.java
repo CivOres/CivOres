@@ -1,6 +1,8 @@
 package uk.co.froogo.civores.player;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -8,6 +10,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.generation.OreChunk;
@@ -31,20 +34,32 @@ public class PlayerEvents implements Listener {
             ignoreCancelled = true
     )
     public void onPlayerMove(PlayerMoveEvent event) {
+        onMove(event.getPlayer(), event.getFrom(), event.getTo());
+    }
+
+    @EventHandler(
+            priority = EventPriority.HIGHEST,
+            ignoreCancelled = true
+    )
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        onMove(event.getPlayer(), event.getFrom(), event.getTo());
+    }
+
+    private void onMove(Player player, Location from, Location to) {
         // Skip events when a player doesn't move to a new chunk.
-        if (event.getFrom().getChunk().equals(event.getTo().getChunk()))
+        if (from.getChunk().equals(to.getChunk()))
             return;
 
         // Player must have joined the server too recently to have metadata; continue.
-        if (!event.getPlayer().hasMetadata(PlayerOreMetadata.key))
+        if (!player.hasMetadata(PlayerOreMetadata.key))
             return;
 
-        PlayerOreMetadata metadata = (PlayerOreMetadata) event.getPlayer().getMetadata(PlayerOreMetadata.key).get(0);
+        PlayerOreMetadata metadata = (PlayerOreMetadata) player.getMetadata(PlayerOreMetadata.key).get(0);
 
         metadata.getOreChunkMap().clear();
 
         OreChunk oreChunk = new OreChunk();
-        metadata.getOreChunkMap().put(event.getTo().getChunk().getChunkKey(), oreChunk);
+        metadata.getOreChunkMap().put(to.getChunk().getChunkKey(), oreChunk);
 
         ArrayList<OreGenerationSettings> settings = new ArrayList<>();
         settings.add(new OreGenerationSettings(Material.COAL_ORE, 0.12f, 0.8f, 20f, 60f, 0.005f));
@@ -59,7 +74,7 @@ public class PlayerEvents implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                oreChunk.generate(settings, event.getTo().getChunk().getX() << 4, event.getTo().getChunk().getZ() << 4, event.getPlayer().getUniqueId(), event.getPlayer().getWorld().getUID());
+                oreChunk.generate(settings, to.getChunk().getX() << 4, to.getChunk().getZ() << 4, player.getUniqueId(), player.getWorld().getUID());
             }
         }.runTaskAsynchronously(CivOres.getInstance());
     }
