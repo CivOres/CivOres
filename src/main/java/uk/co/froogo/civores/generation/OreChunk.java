@@ -100,7 +100,9 @@ public class OreChunk {
                     Material material = ores.get(coordsToShort(x, y, z));
                     Location location = chunk.getBlock(x, y, z).getLocation();
 
-                    // TODO: optimise this to use multi block change not single.
+                    // This could possibly be optimised using multi block change events.
+                    // Though this is not natively accessible using just the Paper Spigot API,
+                    // and would require NMS/ProtocolLib, which I currently don't want to use.
 
                     if (material != null)
                         player.sendBlockChange(location, material.createBlockData());
