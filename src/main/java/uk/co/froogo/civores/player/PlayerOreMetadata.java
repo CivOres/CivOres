@@ -7,6 +7,9 @@ import uk.co.froogo.civores.generation.OreChunk;
 
 import java.util.HashMap;
 
+/**
+ * Metadata on every player containing all of their cached OreChunks.
+ */
 public class PlayerOreMetadata extends MetadataValueAdapter {
     public static final String key = "civores-player-ore";
 

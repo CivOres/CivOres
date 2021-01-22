@@ -181,6 +181,10 @@ public class OreChunk {
         state = OreChunkState.SENT;
     }
 
+    /**
+     * @param block block inside OreChunk to get the OreChunk material of.
+     * @return material for that position in the OreChunk (null if there is no material at that position).
+     */
     public @Nullable Material getMaterialAtBlock(Block block) {
         return ores.get(coordsToShort(block.getX() - (block.getChunk().getX() << 4), block.getY(), block.getZ() - (block.getChunk().getZ() << 4)));
     }

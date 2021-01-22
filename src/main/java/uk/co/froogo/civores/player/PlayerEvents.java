@@ -19,6 +19,9 @@ import uk.co.froogo.civores.generation.OreGenerationSettings;
 
 import java.util.*;
 
+/**
+ * Events related to generating and sending OreChunks to players.
+ */
 public class PlayerEvents implements Listener {
     public PlayerEvents(CivOres plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
