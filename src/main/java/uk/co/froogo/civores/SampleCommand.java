@@ -13,6 +13,9 @@ import uk.co.froogo.civores.noise.FastNoise;
 
 import java.util.ArrayList;
 
+/**
+ * Command to show a player a sample of currently generated ores.
+ */
 public class SampleCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

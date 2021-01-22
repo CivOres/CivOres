@@ -1,9 +1,13 @@
 package uk.co.froogo.civores.generation;
 
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Settings of the frequency, threshold, and optimal Y levels for one specific ore.
+ */
 public class OreGenerationSettings {
-    private final Material material;
+    private final @NotNull Material material;
 
     private final float frequency;
     private final float minimum;
@@ -11,7 +15,7 @@ public class OreGenerationSettings {
     private final float optimalYMax;
     private final float optimalYPunishment;
 
-    public OreGenerationSettings(Material material, float frequency, float minimum, float optimalYMin, float optimalYMax, float optimalYPunishment) {
+    public OreGenerationSettings(@NotNull Material material, float frequency, float minimum, float optimalYMin, float optimalYMax, float optimalYPunishment) {
         this.material = material;
         this.frequency = frequency;
         this.minimum = minimum;
@@ -20,7 +24,7 @@ public class OreGenerationSettings {
         this.optimalYPunishment = optimalYPunishment;
     }
 
-    public Material getMaterial() {
+    public @NotNull Material getMaterial() {
         return material;
     }
 

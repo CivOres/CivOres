@@ -3,6 +3,7 @@ package uk.co.froogo.civores.generation;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.noise.FastNoise;
 
 import java.util.ArrayList;
@@ -10,10 +11,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * A stateless consistently generating map of ores for a given chunk.
+ * As this OreChunk is stateless, it is generated asynchronously, and later utilised for its result once its state is OreChunkState.GENERATED.
+ */
 public class OreChunk {
-    private final HashMap<Short, Material> ores;
+    private @NotNull OreChunkState state;
+    private final @NotNull HashMap<Short, Material> ores;
 
     public OreChunk() {
+        state = OreChunkState.GENERATING;
         ores = new HashMap<>();
     }
 
@@ -26,7 +33,7 @@ public class OreChunk {
      * @param worldUUID the UUID of the world for which to generate these ores.
      * @param playerUUID the UUID of the player for which to generate these ores.
      */
-    public void generate(ArrayList<OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, UUID worldUUID, UUID playerUUID) {
+    public void generate(@NotNull ArrayList<@NotNull OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, @NotNull UUID worldUUID, @NotNull UUID playerUUID) {
         for (OreGenerationSettings settings : oreGenerationSettings) {
             FastNoise noise = new FastNoise();
             noise.SetSeed(generateSeed(playerUUID, worldUUID, settings.getMaterial()));
@@ -51,6 +58,8 @@ public class OreChunk {
                 }
             }
         }
+
+        state = OreChunkState.GENERATED;
     }
 
     /**
@@ -60,7 +69,7 @@ public class OreChunk {
      * @param material the material for the seed, used for its ordinal.
      * @return a consistent seed from the provided input parameters.
      */
-    private int generateSeed(UUID playerUUID, UUID worldUUID, Material material) {
+    private int generateSeed(@NotNull UUID playerUUID, @NotNull UUID worldUUID, @NotNull Material material) {
         return (int) (
                 playerUUID.getMostSignificantBits() +
                 playerUUID.getLeastSignificantBits() +
@@ -76,7 +85,7 @@ public class OreChunk {
      *
      * @param chunk this OreChunk's real chunk.
      */
-    public void visualiseAir(Chunk chunk) {
+    public void visualiseAir(@NotNull Chunk chunk) {
         for (int x = 0; x < 16; x++)
             for (int y = 0; y < 256; y++)
                 for (int z = 0; z < 16; z++)
@@ -113,7 +122,7 @@ public class OreChunk {
      * @param chunk this OreChunk's real chunk.
      * @return the block at the co-ordinates in the chunk provided.
      */
-    private Block shortToBlock(short coords, Chunk chunk) {
+    private @NotNull Block shortToBlock(short coords, @NotNull Chunk chunk) {
         // Bits:
         // 1-4  = x
         // 5-8  = z
