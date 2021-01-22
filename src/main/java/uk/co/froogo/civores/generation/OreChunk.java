@@ -2,14 +2,13 @@ package uk.co.froogo.civores.generation;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import uk.co.froogo.civores.noise.FastNoise;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class OreChunk {
     private final HashMap<Short, Material> ores;
@@ -18,15 +17,17 @@ public class OreChunk {
      * Generate all of the ores in a chunk for a specific player given settings.
      *
      * @param oreGenerationSettings the settings for each ore generated in the OreChunk.
-     * @param chunk the real chunk to generate the ores for.
-     * @param player the player who owns these ores.
+     * @param chunkBlockX the X co-ordinate of the chunk bit shifted to the left by four.
+     * @param chunkBlockZ the Z co-ordinate of the chunk bit shifted to the left by four.
+     * @param worldUUID the UUID of the world for which to generate these ores.
+     * @param playerUUID the UUID of the player for which to generate these ores.
      */
-    public OreChunk(ArrayList<OreGenerationSettings> oreGenerationSettings, Chunk chunk, Player player) {
+    public OreChunk(ArrayList<OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, UUID worldUUID, UUID playerUUID) {
         ores = new HashMap<>();
 
         for (OreGenerationSettings settings : oreGenerationSettings) {
             FastNoise noise = new FastNoise();
-            noise.SetSeed(generateSeed(player, chunk.getWorld(), settings.getMaterial()));
+            noise.SetSeed(generateSeed(playerUUID, worldUUID, settings.getMaterial()));
             noise.SetNoiseType(FastNoise.NoiseType.OpenSimplex2S);
             noise.SetFrequency(settings.getFrequency());
             noise.SetFractalType(FastNoise.FractalType.None);
@@ -42,9 +43,7 @@ public class OreChunk {
 
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
-                        Block block =  chunk.getBlock(x, y, z);
-
-                        if (noise.GetNoise(block.getX(), block.getY(), block.getZ()) >= min)
+                        if (noise.GetNoise(chunkBlockX + x, y, chunkBlockZ + z) >= min)
                             ores.put(coordsToShort(x, y, z), settings.getMaterial());
                     }
                 }
@@ -54,17 +53,17 @@ public class OreChunk {
 
     /**
      * Generate a consistent seed from a player, world, and material.
-     * @param player the player for who the seed is for, used for their UUID.
-     * @param world the world for where the seed is for, used for its UUID.
+     * @param playerUUID the player's UUID for who the seed is for.
+     * @param worldUUID the world's UUID for where the seed is for.
      * @param material the material for the seed, used for its ordinal.
      * @return a consistent seed from the provided input parameters.
      */
-    private int generateSeed(Player player, World world, Material material) {
+    private int generateSeed(UUID playerUUID, UUID worldUUID, Material material) {
         return (int) (
-                player.getUniqueId().getMostSignificantBits() +
-                player.getUniqueId().getLeastSignificantBits() +
-                world.getUID().getMostSignificantBits() +
-                world.getUID().getLeastSignificantBits() +
+                playerUUID.getMostSignificantBits() +
+                playerUUID.getLeastSignificantBits() +
+                worldUUID.getMostSignificantBits() +
+                worldUUID.getLeastSignificantBits() +
                 material.ordinal()
         );
     }
