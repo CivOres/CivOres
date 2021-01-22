@@ -37,8 +37,6 @@ public class OreChunk {
      * @param playerUUID the UUID of the player for which to generate these ores.
      */
     public void generate(@NotNull ArrayList<@NotNull OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, @NotNull UUID worldUUID, @NotNull UUID playerUUID) {
-        System.out.println("Generate");
-
         for (OreGenerationSettings settings : oreGenerationSettings) {
             FastNoise noise = new FastNoise();
             noise.SetSeed(generateSeed(playerUUID, worldUUID, settings.getMaterial()));
