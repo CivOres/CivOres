@@ -1,6 +1,7 @@
 package uk.co.froogo.civores.generation;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -87,16 +88,27 @@ public class OreChunk {
      * Visualise an OreChunk to a player by replacing all of the blocks in that
      * chunk with either air or ores from this OreChunk.
      *
+     * This is done entirely through packets, and not actually changing the blocks.
+     *
      * @param chunk this OreChunk's real chunk.
+     * @param player the player to show the visualisation to.
      */
-    public void visualiseAir(@NotNull Chunk chunk) {
-        for (int x = 0; x < 16; x++)
-            for (int y = 0; y < 256; y++)
-                for (int z = 0; z < 16; z++)
-                    chunk.getBlock(x, y, z).setType(Material.AIR);
+    public void visualiseAir(@NotNull Chunk chunk, @NotNull Player player) {
+        for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 256; y++) {
+                for (int z = 0; z < 16; z++) {
+                    Material material = ores.get(coordsToShort(x, y, z));
+                    Location location = chunk.getBlock(x, y, z).getLocation();
 
-        for (Map.Entry<Short, Material> entry : ores.entrySet())
-            shortToBlock(entry.getKey(), chunk).setType(entry.getValue());
+                    // TODO: optimise this to use multi block change not single.
+
+                    if (material != null)
+                        player.sendBlockChange(location, material.createBlockData());
+                    else
+                        player.sendBlockChange(location, Material.AIR.createBlockData());
+                }
+            }
+        }
     }
 
     /**

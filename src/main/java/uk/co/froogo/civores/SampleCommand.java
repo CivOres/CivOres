@@ -99,7 +99,7 @@ public class SampleCommand implements CommandExecutor {
                 // Cancel this runnable.
                 cancel();
 
-                oreChunk.visualiseAir(chunk);
+                oreChunk.visualiseAir(chunk, player);
             }
         }.runTaskTimer(CivOres.getInstance(), 1L, 1L);
 
