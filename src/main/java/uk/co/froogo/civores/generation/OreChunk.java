@@ -13,6 +13,10 @@ import java.util.UUID;
 public class OreChunk {
     private final HashMap<Short, Material> ores;
 
+    public OreChunk() {
+        ores = new HashMap<>();
+    }
+
     /**
      * Generate all of the ores in a chunk for a specific player given settings.
      *
@@ -22,9 +26,7 @@ public class OreChunk {
      * @param worldUUID the UUID of the world for which to generate these ores.
      * @param playerUUID the UUID of the player for which to generate these ores.
      */
-    public OreChunk(ArrayList<OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, UUID worldUUID, UUID playerUUID) {
-        ores = new HashMap<>();
-
+    public void generate(ArrayList<OreGenerationSettings> oreGenerationSettings, int chunkBlockX, int chunkBlockZ, UUID worldUUID, UUID playerUUID) {
         for (OreGenerationSettings settings : oreGenerationSettings) {
             FastNoise noise = new FastNoise();
             noise.SetSeed(generateSeed(playerUUID, worldUUID, settings.getMaterial()));
