@@ -8,6 +8,11 @@ Custom, player and biome-specific ore generation designed for Civilisation-style
 - [The solution](#the-solution)
     - [Custom ore generation](#custom-ore-generation)
     - [Packet manipulated ores](#packet-manipulated-ores)
+- [Technical Overview](#technical-overview)
+    - [OreChunk](#orechunk)
+        - [Multi-threading](#multi-threading)
+        - [Generation](#generation)
+    - [Player metadata](#player-metadata)
 
 ## The problem
 ### Biome-specific ore generation
@@ -34,3 +39,33 @@ and swiftly change it to that ore on the server before breaking it.
 
 As these ores would be done entirely through packets, it seems natural to also incorporate an anti-xray on ores,
 as this would probably not raise the complexity too much.
+
+## Technical Overview
+### OreChunk
+An OreChunk will be the class which generates and caches all the ores in a chunk (16x256x16) for one specific player.
+This will effectively contain a HashMap with the key being the co-ordinates of the ore, and the value being the material of the ore.
+These OreChunks will generate the exact same way given the same input parameters (player, world, settings) every time using noise seeding.
+This is as to produce consistent ores across the map, without storing it anywhere in a database.
+
+#### Multi-threading
+Given this stateless nature, it would allow for this to run on a separate thread, which would make the complex calculations (virtually) free.
+This is because Minecraft servers are by nature single-threaded, and this one thread will almost always be the bottleneck.
+Due to this, Minecraft servers typically have an abundance of unused cores and threads which are (virtually) free to utilise.
+
+Though, of course, multi-threading would restrict our API access during generation.
+Therefore, OreChunks will have to be generated,
+then set a flag once generated telling the synchronous checker to run all necessary synchronous tasks.
+For example, sending all the necessary packets to the player (which would require having access to the world) which would require synchronicity.
+
+#### Generation
+Generation will be done using 3D OpenSimplex2S noise using the [FastNoise library](https://github.com/Auburn/FastNoise) for Java.
+Ores will generate when the noise value at a particular co-ordinate exceeds the threshold required for generating it.
+This threshold would be generated via a combination of the Y level, versus it's optimal Y level, and the biome's spawnrates.
+
+As for differentiating between biomes, a sample will be taken at the centre of the chunk.
+The chunk will then be generated using that one biome for the entire chunk.
+
+### Player metadata
+In order to store these OreChunks, they will need to be stored in a HashMap on the player's metadata,
+with the key being the chunk's key, and the value being the OreChunk.
+As this will contain all the OreChunks, this would also ensure that new OreChunks are generated, and old are disposed when needed.
