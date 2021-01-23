@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.noise.FastNoise;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Command to calculate the probability of an spawning ore with given settings.
  */
@@ -52,13 +54,18 @@ public class ProbabilityCommand implements CommandExecutor {
         else
             min = minimum;
 
+        sender.sendMessage("Calculated minimum: " + minimum);
+        sender.sendMessage("Started calculating probability, this may take a moment depending on the sample size.");
+
         int count = 0;
 
-        for (int x = 0; x < sampleSize; x++)
-            if (noise.GetNoise(x, y, 0) >= min)
-                count++;
+        int sqrtSampleSize = (int) Math.sqrt(sampleSize);
+        for (int x = 0; x < sqrtSampleSize; x++)
+            for (int z = 0; z < sqrtSampleSize; z++)
+                if (noise.GetNoise(x, y, z) >= min)
+                    count++;
 
-        sender.sendMessage((double) count / (double) sampleSize * 100.d + "% probability");
+        sender.sendMessage((double) count / (double) (sqrtSampleSize * sqrtSampleSize) * 100.d + "% probability");
         return true;
     }
 }
