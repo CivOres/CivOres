@@ -53,7 +53,7 @@ public class ProbabilityCommand implements CommandExecutor {
         else
             min = minimum;
 
-        sender.sendMessage("Calculated minimum: " + minimum);
+        sender.sendMessage("Calculated minimum: " + min);
         sender.sendMessage("Started calculating probability asynchronously, this may take a moment depending on the sample size.");
 
         int sqrtSampleSize = (int) Math.sqrt(sampleSize);
