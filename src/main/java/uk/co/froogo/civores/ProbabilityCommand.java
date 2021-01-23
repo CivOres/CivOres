@@ -6,8 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.noise.FastNoise;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
  * Command to calculate the probability of an spawning ore with given settings.
  */
