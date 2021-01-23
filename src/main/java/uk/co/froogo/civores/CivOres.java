@@ -1,5 +1,6 @@
 package uk.co.froogo.civores;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.commands.ProbabilityCommand;
@@ -12,6 +13,12 @@ import uk.co.froogo.civores.player.PlayerOreMetadataTicker;
  */
 public final class CivOres extends JavaPlugin {
     private static CivOres instance;
+
+    @Override
+    public void onLoad() {
+        // Get ProtocolManager to initialise it if it hasn't already been loaded.
+        ProtocolLibrary.getProtocolManager();
+    }
 
     @Override
     public void onEnable() {

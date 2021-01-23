@@ -4,6 +4,8 @@ main: uk.co.froogo.civores.CivOres
 api-version: 1.16
 prefix: Civ Ores
 authors: [ Froogo ]
+depend:
+  - ProtocolLib
 
 commands:
   sample:

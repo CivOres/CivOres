@@ -9,9 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.noise.FastNoise;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A stateless consistently generating map of ores for a given chunk.
@@ -194,12 +199,25 @@ public class OreChunk {
     private void sendOres(Player player, Long key) {
         Chunk chunk = player.getWorld().getChunkAt(key);
 
+        ArrayList<OreChunkVerticalPacket> verticalPackets = new ArrayList<>(16);
+        for (int i = 0; i < 16; i++)
+            verticalPackets.add(new OreChunkVerticalPacket());
+
         for (Map.Entry<Short, Material> entry : ores.entrySet()) {
             Block block = shortToBlock(entry.getKey(), chunk);
 
             // Only send blocks which are visible as an anti-Xray measure.
             if (block.getType().equals(Material.STONE) && blockVisible(block))
-                player.sendBlockChange(block.getLocation(), entry.getValue().createBlockData());
+                verticalPackets.get(block.getY() / 16).addBlock(entry.getValue(), block);
+        }
+
+        for (int y = 0; y < 16; y++) {
+            try {
+                verticalPackets.get(y).send(player, chunk.getX(), y, chunk.getZ());
+            } catch (InvocationTargetException e) {
+                CivOres.getInstance().getLogger().warning("Error sending MULTI_BLOCK_CHANGE packet to player in OreChunk.sendOres");
+                return;
+            }
         }
 
         state = OreChunkState.SENT;
@@ -214,6 +232,10 @@ public class OreChunk {
      * @param player owner of this OreChunk.
      */
     public void onBlockBreak(BlockBreakEvent event, Player player) {
+        ArrayList<OreChunkVerticalPacket> verticalPackets = new ArrayList<>(16);
+        for (int i = 0; i < 16; i++)
+            verticalPackets.add(new OreChunkVerticalPacket());
+
         for (BlockFace face : adjacentBlockFaces) {
             Block block = event.getBlock().getRelative(face);
 
@@ -227,7 +249,16 @@ public class OreChunk {
             if (material == null || blockVisible(block))
                 continue;
 
-            player.sendBlockChange(block.getLocation(), material.createBlockData());
+            verticalPackets.get(block.getY() / 16).addBlock(material, block);
+        }
+
+        for (int y = 0; y < 16; y++) {
+            try {
+                verticalPackets.get(y).send(player, event.getBlock().getChunk().getX(), y, event.getBlock().getChunk().getZ());
+            } catch (InvocationTargetException e) {
+                CivOres.getInstance().getLogger().warning("Error sending MULTI_BLOCK_CHANGE packet to player in OreChunk.onBlockBreak");
+                return;
+            }
         }
     }
 
