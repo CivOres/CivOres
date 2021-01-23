@@ -3,6 +3,7 @@ package uk.co.froogo.civores;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.noise.FastNoise;
 
@@ -53,17 +54,42 @@ public class ProbabilityCommand implements CommandExecutor {
             min = minimum;
 
         sender.sendMessage("Calculated minimum: " + minimum);
-        sender.sendMessage("Started calculating probability, this may take a moment depending on the sample size.");
-
-        int count = 0;
+        sender.sendMessage("Started calculating probability asynchronously, this may take a moment depending on the sample size.");
 
         int sqrtSampleSize = (int) Math.sqrt(sampleSize);
-        for (int x = 0; x < sqrtSampleSize; x++)
-            for (int z = 0; z < sqrtSampleSize; z++)
-                if (noise.GetNoise(x, y, z) >= min)
-                    count++;
 
-        sender.sendMessage((double) count / (double) (sqrtSampleSize * sqrtSampleSize) * 100.d + "% probability");
+        // Arrays as to allow nested classes read and write to them.
+        final int[] count = {0};
+        final boolean[] calculationsFinished = {false};
+
+        // Run the calculations asynchronously.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int x = 0; x < sqrtSampleSize; x++)
+                    for (int z = 0; z < sqrtSampleSize; z++)
+                        if (noise.GetNoise(x, y, z) >= min)
+                            count[0]++;
+
+                calculationsFinished[0] = true;
+            }
+        }.runTaskAsynchronously(CivOres.getInstance());
+
+        // Print the message synchronously once the calculations have finished.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Wait until the OreChunk is generated.
+                if (!calculationsFinished[0])
+                    return;
+
+                // Cancel this runnable.
+                cancel();
+
+                sender.sendMessage((double) count[0] / (double) (sqrtSampleSize * sqrtSampleSize) * 100.d + "% probability");
+            }
+        }.runTaskTimer(CivOres.getInstance(), 1L, 1L);
+
         return true;
     }
 }
