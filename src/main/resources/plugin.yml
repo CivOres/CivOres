@@ -9,3 +9,6 @@ commands:
   sample:
     description: Generate a sample chunk to visualise
     usage: /<command> [frequency] [minimum] [optimalYMin] [optimalYMax] [yPunishment] [seed]
+  probability:
+    description: Calculate the probability of an ore spawning at a specific Y level given certain parameters.
+    usage: /<command> [frequency] [minimum] [optimalYMin] [optimalYMax] [yPunishment] [yLevel] [sampleSize]

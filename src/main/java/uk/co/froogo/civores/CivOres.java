@@ -24,6 +24,7 @@ public final class CivOres extends JavaPlugin {
 
         // Register commands.
         getCommand("sample").setExecutor(new SampleCommand());
+        getCommand("probability").setExecutor(new ProbabilityCommand());
     }
 
     @Override
