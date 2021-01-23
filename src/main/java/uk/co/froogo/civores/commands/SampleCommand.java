@@ -1,4 +1,4 @@
-package uk.co.froogo.civores;
+package uk.co.froogo.civores.commands;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreChunkState;
 import uk.co.froogo.civores.generation.OreGenerationSettings;

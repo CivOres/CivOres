@@ -1,10 +1,11 @@
-package uk.co.froogo.civores;
+package uk.co.froogo.civores.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.noise.FastNoise;
 
 /**

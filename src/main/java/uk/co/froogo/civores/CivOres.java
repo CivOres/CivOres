@@ -2,6 +2,8 @@ package uk.co.froogo.civores;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import uk.co.froogo.civores.commands.ProbabilityCommand;
+import uk.co.froogo.civores.commands.SampleCommand;
 import uk.co.froogo.civores.player.PlayerEvents;
 import uk.co.froogo.civores.player.PlayerOreMetadataTicker;
 
