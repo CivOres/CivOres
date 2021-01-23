@@ -1,5 +1,6 @@
 package uk.co.froogo.civores.player;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -17,7 +18,9 @@ import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreGenerationSettings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.UUID;
 
 /**
  * Events related to generating and sending OreChunks to players.
@@ -27,7 +30,10 @@ public class PlayerEvents implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
+    @EventHandler(
+            priority = EventPriority.HIGH,
+            ignoreCancelled = true
+    )
     public void onPlayerJoin(PlayerJoinEvent event) {
         // Set the player's metadata.
         event.getPlayer().setMetadata(PlayerOreMetadata.key, new PlayerOreMetadata());
@@ -93,7 +99,10 @@ public class PlayerEvents implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(
+            priority = EventPriority.HIGH,
+            ignoreCancelled = true
+    )
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.hasBlock())
             return;
@@ -116,5 +125,25 @@ public class PlayerEvents implements Listener {
             return;
 
         event.getClickedBlock().setType(material);
+    }
+
+    @EventHandler(
+            priority = EventPriority.HIGH,
+            ignoreCancelled = true
+    )
+    public void onBlockBreak(BlockBreakEvent event) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            // Player must have joined the server too recently to have metadata; continue.
+            if (!player.hasMetadata(PlayerOreMetadata.key))
+                continue;
+
+            PlayerOreMetadata metadata = (PlayerOreMetadata) player.getMetadata(PlayerOreMetadata.key).get(0);
+
+            OreChunk oreChunk = metadata.getOreChunkMap().get(event.getBlock().getChunk().getChunkKey());
+            if (oreChunk == null)
+                continue;
+
+            oreChunk.onBlockBreak(event, player);
+        }
     }
 }

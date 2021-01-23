@@ -4,21 +4,29 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.co.froogo.civores.noise.FastNoise;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A stateless consistently generating map of ores for a given chunk.
  * As this OreChunk is stateless, it is generated asynchronously, and later utilised for its result once its state is OreChunkState.GENERATED.
  */
 public class OreChunk {
+    private static final BlockFace[] adjacentBlockFaces = {
+            BlockFace.UP,
+            BlockFace.DOWN,
+            BlockFace.NORTH,
+            BlockFace.EAST,
+            BlockFace.SOUTH,
+            BlockFace.WEST
+    };
+
     private @NotNull OreChunkState state;
     private final @NotNull HashMap<Short, Material> ores;
 
@@ -132,6 +140,21 @@ public class OreChunk {
     }
 
     /**
+     * Represent the co-ordinates of any block in a chunk more concisely.
+     * Helper function of coordsToShort(x, y, z).
+     *
+     * Bits:
+     * x = 1-4
+     * z = 5-8
+     * y = 9-16
+     * @param block block to get the short co-ordinates of.
+     * @return a short containing the co-ordinates more concisely.
+     */
+    private short coordsToShort(Block block) {
+        return coordsToShort(block.getX() - (block.getChunk().getX() << 4), block.getY(), block.getZ() - (block.getChunk().getZ() << 4));
+    }
+
+    /**
      * Get back a block from co-ords generated using coordsToShort(x, y, z).
      *
      * @param coords co-ordinates generated using coordsToShort(x, y, z).
@@ -174,7 +197,8 @@ public class OreChunk {
         for (Map.Entry<Short, Material> entry : ores.entrySet()) {
             Block block = shortToBlock(entry.getKey(), chunk);
 
-            if (block.getType().equals(Material.STONE))
+            // Only send blocks which are visible as an anti-Xray measure.
+            if (block.getType().equals(Material.STONE) && blockVisible(block))
                 player.sendBlockChange(block.getLocation(), entry.getValue().createBlockData());
         }
 
@@ -182,11 +206,51 @@ public class OreChunk {
     }
 
     /**
+     * Called every time a block is broken in this OreChunk.
+     *
+     * Used for sending materials that are currently concealed by anti-Xray.
+     *
+     * @param event event fired by Spigot.
+     * @param player owner of this OreChunk.
+     */
+    public void onBlockBreak(BlockBreakEvent event, Player player) {
+        for (BlockFace face : adjacentBlockFaces) {
+            Block block = event.getBlock().getRelative(face);
+
+            // If the block isn't a replaceable material, continue.
+            if (!block.getType().equals(Material.STONE))
+                continue;
+
+            Material material = ores.get(coordsToShort(block));
+
+            // If this block doesn't have an ore or was already visible, continue.
+            if (material == null || blockVisible(block))
+                continue;
+
+            player.sendBlockChange(block.getLocation(), material.createBlockData());
+        }
+    }
+
+    /**
+     * Checks if a block is adjacent to air.
+     *
+     * @param block the block to check.
+     * @return whether or not the block is adjacent to air.
+     */
+    private boolean blockVisible(Block block) {
+        for (BlockFace face : adjacentBlockFaces)
+            if (block.getRelative(face).getType().equals(Material.AIR))
+                return true;
+
+        return false;
+    }
+
+    /**
      * @param block block inside OreChunk to get the OreChunk material of.
      * @return material for that position in the OreChunk (null if there is no material at that position).
      */
     public @Nullable Material getMaterialAtBlock(Block block) {
-        return ores.get(coordsToShort(block.getX() - (block.getChunk().getX() << 4), block.getY(), block.getZ() - (block.getChunk().getZ() << 4)));
+        return ores.get(coordsToShort(block));
     }
 
     /**
