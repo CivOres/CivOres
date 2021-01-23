@@ -1,7 +1,6 @@
 package uk.co.froogo.civores.generation;
 
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -105,21 +104,20 @@ public class OreChunk {
      * @param player the player to show the visualisation to.
      */
     public void visualiseAir(@NotNull Chunk chunk, @NotNull Player player) {
-        for (int x = 0; x < 16; x++) {
-            for (int y = 0; y < 256; y++) {
-                for (int z = 0; z < 16; z++) {
-                    Material material = ores.get(coordsToShort(x, y, z));
-                    Location location = chunk.getBlock(x, y, z).getLocation();
+        for (int chunkY = 0; chunkY < 16; chunkY++) {
+            int chunkYBlock = chunkY << 4;
+            OreChunkVerticalPacket packet = new OreChunkVerticalPacket();
 
-                    // This could possibly be optimised using multi block change events.
-                    // Though this is not natively accessible using just the Paper Spigot API,
-                    // and would require NMS/ProtocolLib, which I currently don't want to use.
+            for (int x = 0; x < 16; x++)
+                for (int y = 0; y < 16; y++)
+                    for (int z = 0; z < 16; z++)
+                        packet.addBlock(ores.getOrDefault(coordsToShort(x, y + chunkYBlock, z), Material.AIR), chunk.getBlock(x, y + chunkYBlock, z));
 
-                    if (material != null)
-                        player.sendBlockChange(location, material.createBlockData());
-                    else
-                        player.sendBlockChange(location, Material.AIR.createBlockData());
-                }
+            try {
+                packet.send(player, chunk.getX(), chunkY, chunk.getZ());
+            } catch (InvocationTargetException e) {
+                CivOres.getInstance().getLogger().warning("Error sending MULTI_BLOCK_CHANGE packet to player in OreChunk.visualiseAir");
+                return;
             }
         }
     }
