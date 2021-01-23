@@ -2,7 +2,7 @@ name: CivOres
 version: ${project.version}
 main: uk.co.froogo.civores.CivOres
 api-version: 1.16
-prefix: Civ Ores
+prefix: CivOres
 authors: [ Froogo ]
 depend:
   - ProtocolLib
