@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreChunkState;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 public class SampleCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        EntityDamageEvent event;
         if (!(sender instanceof Player)) {
             sender.sendMessage("You must be a player to execute this command.");
             return true;
