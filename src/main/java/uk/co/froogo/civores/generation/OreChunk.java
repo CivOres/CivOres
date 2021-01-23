@@ -239,6 +239,10 @@ public class OreChunk {
         for (BlockFace face : adjacentBlockFaces) {
             Block block = event.getBlock().getRelative(face);
 
+            // Prevent chunk wrap around.
+            if (!block.getChunk().equals(event.getBlock().getChunk()))
+                continue;
+
             // If the block isn't a replaceable material, continue.
             if (!block.getType().equals(Material.STONE))
                 continue;
