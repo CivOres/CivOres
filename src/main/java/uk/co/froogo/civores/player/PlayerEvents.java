@@ -95,7 +95,7 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+        if (!event.hasBlock())
             return;
 
         if (!event.getClickedBlock().getType().equals(Material.STONE))
