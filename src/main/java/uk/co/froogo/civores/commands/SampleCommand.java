@@ -11,7 +11,6 @@ import uk.co.froogo.civores.CivOres;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreChunkState;
 import uk.co.froogo.civores.generation.OreGenerationSettings;
-import uk.co.froogo.civores.noise.FastNoise;
 
 import java.util.ArrayList;
 
@@ -41,7 +40,6 @@ public class SampleCommand implements CommandExecutor {
             float optimalYMin;
             float optimalYMax;
             float optimalYPunishment;
-            int seed;
 
             try {
                 frequency = Float.parseFloat(args[0]);
@@ -49,21 +47,10 @@ public class SampleCommand implements CommandExecutor {
                 optimalYMin = Float.parseFloat(args[2]);
                 optimalYMax = Float.parseFloat(args[3]);
                 optimalYPunishment = Float.parseFloat(args[4]);
-
-                if (args.length >= 6)
-                    seed = Integer.parseInt(args[5]);
-                else
-                    seed = (int)(System.currentTimeMillis() % Integer.MAX_VALUE);
             } catch (NumberFormatException e) {
                 player.sendMessage("Could not parse arguments.");
                 return true;
             }
-
-            FastNoise noise = new FastNoise();
-            noise.SetSeed(seed);
-            noise.SetNoiseType(FastNoise.NoiseType.OpenSimplex2S);
-            noise.SetFrequency(frequency);
-            noise.SetFractalType(FastNoise.FractalType.None);
 
             settings.add(new OreGenerationSettings(Material.DIAMOND_ORE, frequency, minimum, optimalYMin, optimalYMax, optimalYPunishment));
         } else {
