@@ -2,12 +2,15 @@ package uk.co.froogo.civores.generation;
 
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import uk.co.froogo.civores.CivOres;
+import uk.co.froogo.civores.config.Config;
 
 /**
  * Settings of the frequency, threshold, and optimal Y levels for one specific ore.
  */
 public class OreGenerationSettings {
-    private final @NotNull Material material;
+    private String type;
+    private @NotNull Material material;
 
     private final float frequency;
     private final float minimum;
@@ -22,6 +25,20 @@ public class OreGenerationSettings {
         this.optimalYMin = optimalYMin;
         this.optimalYMax = optimalYMax;
         this.optimalYPunishment = optimalYPunishment;
+    }
+
+    /**
+     * Initialisation called after loading configuration.
+     */
+    public void init(String key) {
+        Material material = Material.getMaterial(type);
+        if (material == null) {
+            this.material = Material.STONE;
+            CivOres.getInstance().getLogger().severe("Error parsing " + Config.location + "; unknown type \"" + type + "\" in preset \"" + key + "\"");
+            return;
+        }
+
+        this.material = material;
     }
 
     public @NotNull Material getMaterial() {

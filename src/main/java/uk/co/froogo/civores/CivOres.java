@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.co.froogo.civores.commands.ProbabilityCommand;
 import uk.co.froogo.civores.commands.SampleCommand;
+import uk.co.froogo.civores.config.Config;
 import uk.co.froogo.civores.player.PlayerEvents;
 import uk.co.froogo.civores.player.PlayerOreMetadataTicker;
 
@@ -24,6 +25,9 @@ public final class CivOres extends JavaPlugin {
     public void onEnable() {
         // Set singleton reference to this.
         instance = this;
+
+        // Load configuration file.
+        Config.init();
 
         // Start tickers.
         new PlayerOreMetadataTicker(this);

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import uk.co.froogo.civores.CivOres;
+import uk.co.froogo.civores.config.Config;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreGenerationSettings;
 
@@ -80,14 +82,8 @@ public class PlayerEvents implements Listener {
             OreChunk oreChunk = new OreChunk();
             metadata.getOreChunkMap().put(key, oreChunk);
 
-            ArrayList<OreGenerationSettings> settings = new ArrayList<>();
-            settings.add(new OreGenerationSettings(Material.COAL_ORE, 0.12f, 0.8f, 20f, 60f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.IRON_ORE, 0.14f, 0.85f, 20f, 40f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.GOLD_ORE, 0.14f, 0.9f, 20f, 30f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.REDSTONE_ORE, 0.14f, 0.9f, 20f, 30f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.LAPIS_ORE, 0.1f, 0.9f, 10f, 20f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.EMERALD_ORE, 0.16f, 0.93f, 10f, 20f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.DIAMOND_ORE, 0.1f, 0.9f, 11f, 11f, 0.005f));
+            Biome biome = player.getWorld().getChunkAt(key).getBlock(7, 0, 7).getBiome();
+            ArrayList<OreGenerationSettings> settings = Config.getInstance().getSettings(biome);
 
             // Generate the OreChunk asynchronously.
             new BukkitRunnable() {

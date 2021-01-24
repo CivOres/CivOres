@@ -1,0 +1,80 @@
+{
+	"presets": {
+		"COAL_REGULAR": {
+			"type": "COAL_ORE",
+			"frequency": 0.12,
+			"minimum": 0.78,
+			"optimalYMin": 5,
+			"optimalYMax": 60,
+			"optimalYPunishment": 0.005
+		},
+		"IRON_REGULAR": {
+			"type": "IRON_ORE",
+			"frequency": 0.14,
+			"minimum": 0.828,
+			"optimalYMin": 5,
+			"optimalYMax": 50,
+			"optimalYPunishment": 0.005
+		},
+		"GOLD_REGULAR": {
+			"type": "GOLD_ORE",
+			"frequency": 0.12,
+			"minimum": 0.915,
+			"optimalYMin": 5,
+			"optimalYMax": 30,
+			"optimalYPunishment": 0.01
+		},
+		"REDSTONE_REGULAR": {
+			"type": "REDSTONE_ORE",
+			"frequency": 0.14,
+			"minimum": 0.8,
+			"optimalYMin": 5,
+			"optimalYMax": 15,
+			"optimalYPunishment": 0.02
+		},
+		"LAPIS_REGULAR": {
+			"type": "LAPIS_ORE",
+			"frequency": 0.14,
+			"minimum": 0.925,
+			"optimalYMin": 8,
+			"optimalYMax": 20,
+			"optimalYPunishment": 0.005
+		},
+		"DIAMOND_REGULAR": {
+			"type": "DIAMOND_ORE",
+			"frequency": 0.1,
+			"minimum": 0.9304,
+			"optimalYMin": 5,
+			"optimalYMax": 15,
+			"optimalYPunishment": 0.01
+		},
+		"EMERALD_REGULAR": {
+			"type": "EMERALD_ORE",
+			"frequency": 0.14,
+			"minimum": 0.94,
+			"optimalYMin": 5,
+			"optimalYMax": 20,
+			"optimalYPunishment": 0.005
+		}
+	},
+	"defaultBiome": [
+		"COAL_REGULAR",
+		"IRON_REGULAR",
+		"GOLD_REGULAR",
+		"REDSTONE_REGULAR",
+		"LAPIS_REGULAR",
+		"DIAMOND_REGULAR",
+		"EMERALD_REGULAR"
+	],
+	"biomes": {
+		"FLOWER_FOREST": [
+			"COAL_REGULAR",
+			"IRON_REGULAR",
+			"GOLD_REGULAR",
+			"REDSTONE_REGULAR",
+			"LAPIS_REGULAR",
+			"DIAMOND_REGULAR",
+			"EMERALD_REGULAR"
+		]
+	}
+}

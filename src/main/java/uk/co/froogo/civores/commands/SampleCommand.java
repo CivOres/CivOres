@@ -2,12 +2,14 @@ package uk.co.froogo.civores.commands;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import uk.co.froogo.civores.CivOres;
+import uk.co.froogo.civores.config.Config;
 import uk.co.froogo.civores.generation.OreChunk;
 import uk.co.froogo.civores.generation.OreChunkState;
 import uk.co.froogo.civores.generation.OreGenerationSettings;
@@ -27,7 +29,7 @@ public class SampleCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        ArrayList<OreGenerationSettings> settings = new ArrayList<>();
+        ArrayList<OreGenerationSettings> settings;
 
         if (args.length != 0) {
             if (args.length < 5) {
@@ -52,15 +54,11 @@ public class SampleCommand implements CommandExecutor {
                 return true;
             }
 
+            settings = new ArrayList<>();
             settings.add(new OreGenerationSettings(Material.DIAMOND_ORE, frequency, minimum, optimalYMin, optimalYMax, optimalYPunishment));
         } else {
-            settings.add(new OreGenerationSettings(Material.COAL_ORE, 0.12f, 0.8f, 20f, 60f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.IRON_ORE, 0.14f, 0.85f, 20f, 40f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.GOLD_ORE, 0.14f, 0.9f, 20f, 30f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.REDSTONE_ORE, 0.14f, 0.9f, 20f, 30f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.LAPIS_ORE, 0.1f, 0.9f, 10f, 20f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.EMERALD_ORE, 0.16f, 0.93f, 10f, 20f, 0.005f));
-            settings.add(new OreGenerationSettings(Material.DIAMOND_ORE, 0.1f, 0.9f, 11f, 11f, 0.005f));
+            Biome biome = player.getChunk().getBlock(7, 0, 7).getBiome();
+            settings = Config.getInstance().getSettings(biome);
         }
 
         Chunk chunk = player.getChunk();
