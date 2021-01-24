@@ -65,6 +65,9 @@ public class OreChunk {
                 else
                     min = settings.getMinimum();
 
+                if (min >= 1.f)
+                    continue;
+
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         if (noise.GetNoise(chunkBlockX + x, y, chunkBlockZ + z) >= min)
