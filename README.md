@@ -8,6 +8,10 @@ Custom, player and biome-specific ore generation designed for Civilisation-style
 - [The solution](#the-solution)
     - [Custom ore generation](#custom-ore-generation)
     - [Packet manipulated ores](#packet-manipulated-ores)
+- [Installation](#installation)
+    - [Download](#download)
+        - [Download ProtocolLib](#download-protocollib)
+    - [Configuration file](#configuration-file)
 - [Technical Overview](#technical-overview)
     - [OreChunk](#orechunk)
         - [Multi-threading](#multi-threading)
@@ -39,6 +43,20 @@ and swiftly change it to that ore on the server before breaking it.
 
 As these ores would be done entirely through packets, it seems natural to also incorporate an anti-xray on ores,
 as this would probably not raise the complexity too much.
+
+## Installation
+### Download
+You may download the latest version of this plugin (which supports 1.16+), from [the latest release](../../releases/latest).
+
+You may also see all previous releases on [the releases page](../../releases/).
+If you require an older version, the release title should specify the version of the release.
+
+#### Download ProtocolLib
+Currently, the latest release requires ProtocolLib v4.6.0-SNAPSHOT, which can be downloaded from [ProtocolLib's Jenkins](https://ci.dmulloy2.net/job/ProtocolLib/).
+Though, older versions may require different versions, and this will be specified in their release description.
+
+### Configuration file
+TODO: add configuration file instructions.
 
 ## Technical Overview
 ### OreChunk
