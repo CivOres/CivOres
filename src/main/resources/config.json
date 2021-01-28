@@ -1,4 +1,5 @@
 {
+	"renderDistance": 4,
 	"presets": {
 		"COAL_REGULAR": {
 			"type": "COAL_ORE",

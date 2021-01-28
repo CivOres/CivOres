@@ -68,10 +68,12 @@ public class PlayerEvents implements Listener {
 
         PlayerOreMetadata metadata = (PlayerOreMetadata) player.getMetadata(PlayerOreMetadata.key).get(0);
 
-        HashSet<Long> visibleChunks = new HashSet<>(9 * 9);
-        for (int x = 0; x < 9; x++)
-            for (int z = 0; z < 9; z++)
-                visibleChunks.add(Chunk.getChunkKey(x - 4 + player.getChunk().getX(), z - 4 + player.getChunk().getZ()));
+        int distance = Config.getInstance().getRenderDistance();
+        int width = distance * 2 + 1;
+        HashSet<Long> visibleChunks = new HashSet<>(width * width);
+        for (int x = 0; x < width; x++)
+            for (int z = 0; z < width; z++)
+                visibleChunks.add(Chunk.getChunkKey(x - distance + player.getChunk().getX(), z - distance + player.getChunk().getZ()));
 
         metadata.getOreChunkMap().keySet().removeIf(key -> !visibleChunks.contains(key));
 

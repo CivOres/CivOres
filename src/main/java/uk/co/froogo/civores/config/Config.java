@@ -21,6 +21,8 @@ public class Config {
      */
     private static Config instance;
 
+    private int renderDistance;
+
     private HashMap<String, OreGenerationSettings> presets;
 
     private ArrayList<String> defaultBiome;
@@ -85,6 +87,13 @@ public class Config {
 
     public static Config getInstance() {
         return instance;
+    }
+
+    /**
+     * @return the render distance in chunks of ores as the radius of a square around the player's chunk.
+     */
+    public int getRenderDistance() {
+        return renderDistance;
     }
 
     /**
