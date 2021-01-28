@@ -81,6 +81,10 @@ public class PlayerEvents implements Listener {
         UUID worldUUID = player.getWorld().getUID();
 
         for (Long key : visibleChunks) {
+            // Skip over OreChunks which already exist.
+            if (metadata.getOreChunkMap().containsKey(key))
+                continue;
+
             OreChunk oreChunk = new OreChunk();
             metadata.getOreChunkMap().put(key, oreChunk);
 
